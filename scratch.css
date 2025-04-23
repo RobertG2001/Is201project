@@ -1,0 +1,76 @@
+body {
+    margin: 0;
+    padding: 2rem;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: #b4ffb0;
+    color: #2e2e2e;
+    text-align: center;
+    border: 4px solid #5a3e94;
+    margin: 2rem;
+  }
+
+  .tableauPlaceholder {
+    position: center;
+    padding-left: 10rem;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    background-color: #e7e7e7b9;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 4px solid #7a4c20;
+    z-index: 1000;
+  }
+  
+  /* Center container and limit width */
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* Style the heading */
+  h1 {
+    font-size: 2.5rem;
+    color: #000000;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Links */
+  a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #5a3e94;
+    font-weight: bold;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* List styling */
+  ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    display: inline-block;
+    text-align: left;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  ol {
+    text-align:center;
+    list-style-position: inside;
+    padding: 0;
+  }
+  
+  /* Paragraph */
+  p {
+    margin-top: 1.5rem;
+    font-size: 2.0rem;
+  }
+  
+  footer {
+    text-wrap: 50rem;
+  }

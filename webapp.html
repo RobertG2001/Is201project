@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Easter Wordle</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fef9f5;
+      color: #2e2e2e;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .header-img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #7a4c20;
+      letter-spacing: 1px;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-template-rows: repeat(6, 60px);
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tile {
+      width: 60px;
+      height: 60px;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      border-radius: 6px;
+      background-color: #fff;
+      transition: background-color 0.3s ease;
+    }
+
+    .correct {
+      background-color: #b3e6b5;
+      color: #234d20;
+      border-color: #b3e6b5;
+    }
+
+    .present {
+      background-color: #ffe4a1;
+      color: #5a4100;
+      border-color: #ffe4a1;
+    }
+
+    .absent {
+      background-color: #e0c9f3;
+      color: #4c3a64;
+      border-color: #e0c9f3;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      padding: 0.6rem 0.8rem;
+      font-size: 1rem;
+      width: 160px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-transform: uppercase;
+      outline: none;
+      background-color: #fdf6ee;
+    }
+
+    input:focus {
+      border-color: #999;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #d686c6;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #c16fb2;
+    }
+
+    #message {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    #play-again {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .letter-bank {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 6px;
+      margin-top: 1rem;
+      max-width: 100%;
+    }
+
+    .letter {
+      padding: 8px 0;
+      border-radius: 4px;
+      background-color: #eee;
+      color: #444;
+      text-align: center;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: 1px solid #ccc;
+    }
+
+    .footer {
+        text-align:center;
+      margin-top: 2rem;
+      margin-bottom: 8rem;
+      font-size: 2.25rem;
+      font-weight: bold;
+      color: #7a4c20;
+    }
+
+    .page-border {
+  border: 2px solid #e8d8c3; /* soft beige border */
+  padding: 2rem;
+  margin: 1rem;
+  border-radius: 12px;
+  background-color: #fffdfb;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+  </style>
+</head>
+<body>
+    <div class= "page-border">
+  <div class="container">
+    <h2>Luke 24:6
+        He is not here; he has risen!</h2>
+    <h1>Easter Wordle</h1>
+    <div id="board">
+      <!-- 6x5 grid -->
+      <!-- Tiles will be filled by JS -->
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="guess-input" maxlength="5" />
+      <button onclick="submitGuess()">Guess</button>
+    </div>
+
+    <div id="message"></div>
+    <button id="play-again" onclick="startNewGame()">Play Again</button>
+
+    <div class="letter-bank" id="letter-bank">
+      <!-- A-Z will appear here -->
+    </div>
+  </div>
+
+  <div class="footer"> He is Risen </div>
+
+  <script>
+    const wordList = ["PLANT", "GRACE", "BLOOM", "SHINE", "LIGHT", "RISEN", "SHEEP", "LILAC", "CROSS", "PEACE"];
+    let secretWord = "";
+    let currentRow = 0;
+    let attempts = 0;
+    const maxAttempts = 6;
+
+    const board = document.getElementById("board");
+    const input = document.getElementById("guess-input");
+    const message = document.getElementById("message");
+    const playAgainBtn = document.getElementById("play-again");
+    const letterBank = document.getElementById("letter-bank");
+
+    const letterStatus = {};
+
+    function createBoard() {
+      board.innerHTML = "";
+      for (let i = 0; i < 30; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        board.appendChild(tile);
+      }
+    }
+
+    function createLetterBank() {
+      letterBank.innerHTML = "";
+      for (let i = 65; i <= 90; i++) {
+        const char = String.fromCharCode(i);
+        const div = document.createElement("div");
+        div.className = "letter";
+        div.id = "letter-" + char;
+        div.textContent = char;
+        letterBank.appendChild(div);
+        letterStatus[char] = "";
+      }
+    }
+
+    function updateLetterStatus(letter, status) {
+      if (letterStatus[letter] === "correct") return;
+      if (letterStatus[letter] === "present" && status === "absent") return;
+      letterStatus[letter] = status;
+      const el = document.getElementById("letter-" + letter);
+      el.classList.remove("correct", "present", "absent");
+      el.classList.add(status);
+    }
+
+    function checkGuess(guess) {
+      const result = Array(5).fill("absent");
+      const secretArray = secretWord.split("");
+
+      for (let i = 0; i < 5; i++) {
+        if (guess[i] === secretArray[i]) {
+          result[i] = "correct";
+          secretArray[i] = null;
+        }
+      }
+
+      for (let i = 0; i < 5; i++) {
+        if (result[i] === "correct") continue;
+        const index = secretArray.indexOf(guess[i]);
+        if (index !== -1) {
+          result[i] = "present";
+          secretArray[index] = null;
+        }
+      }
+
+      return result;
+    }
+
+    function submitGuess() {
+      const guess = input.value.toUpperCase();
+      if (guess.length !== 5) {
+        alert("Enter a 5-letter word.");
+        return;
+      }
+
+      if (attempts >= maxAttempts) return;
+
+      const result = checkGuess(guess);
+
+      for (let i = 0; i < 5; i++) {
+        const tileIndex = currentRow * 5 + i;
+        const tile = board.children[tileIndex];
+        tile.textContent = guess[i];
+        tile.classList.add(result[i]);
+        updateLetterStatus(guess[i], result[i]);
+      }
+
+      currentRow++;
+      attempts++;
+
+      if (guess === secretWord) {
+        message.textContent = "🎉 Egg-cellent! You guessed it!";
+        endGame();
+      } else if (attempts >= maxAttempts) {
+        message.textContent = "Out of turns! The word was " + secretWord;
+        endGame();
+      }
+
+      input.value = "";
+      input.focus();
+    }
+
+    function endGame() {
+      input.disabled = true;
+      playAgainBtn.style.display = "inline-block";
+    }
+
+    function startNewGame() {
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+      currentRow = 0;
+      attempts = 0;
+      input.disabled = false;
+      input.value = "";
+      message.textContent = "";
+      playAgainBtn.style.display = "none";
+      createBoard();
+      createLetterBank();
+    }
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitGuess();
+    });
+
+    startNewGame();
+  </script>
+</body>
+</html>
